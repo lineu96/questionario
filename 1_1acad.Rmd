@@ -1,0 +1,1297 @@
+---
+title: "Questões acadêmicas"
+output:
+  html_document:                    
+    #toc: true                       
+    #toc_depth: 3                    
+    #toc_float:                      
+    #  collapsed: true
+    #  smooth_scroll: true
+    #number_sections: true           
+    #theme: flatly
+    #spacelab
+    #default,cerulean,journal,flatly,readable,spacelab,
+    #united,cosmo,lumen,paper,sandstone,simplex,yeti
+    
+    highlight: espresso
+    #default, tango, pygments, kate, monochrome, espresso, zenburn, haddock, and textmate
+    #css: styles.css                
+    fig_width: 7                    
+    fig_height: 6                   
+    fig_caption: true               
+    fig_align: 'center'
+    #code_folding: hide              
+#    keep_md: true                   
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = FALSE)
+
+```
+
+As questões a seguir dizem respeito à informações sobre seu grau de escolaridade, instituição atual, ocupação,  setor, área de conhecimento,  etc.
+
+---
+
+### Qual é o seu grau de escolaridade? {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo=FALSE}
+## Tratamento dos dados
+
+#----------------------------------------------------------------------
+### 2023
+
+quest_23$escolaridade <- tolower(iconv(quest_23$escolaridade,
+                                   to ='ASCII//TRANSLIT', 
+                                   from = "UTF-8"))
+
+classOpcoes <- tolower(c("Ensino medio", 
+                         "Ensino superior",
+                         "Mestrado", 
+                         "Doutorado"))
+
+quest_23$escolaridade[ !quest_23$escolaridade %in% classOpcoes ] <- "outro"
+
+quest_23$escolaridade <- factor(quest_23$escolaridade, 
+                            levels = tolower(
+                              c(classOpcoes, "OUTRO")))
+
+#----------------------------------------------------------------------
+
+table1 <- freq_n_ord(quest_23$escolaridade)
+table2 <- freq_ord(quest_23$escolaridade)
+
+```
+
+---
+
+#### Tabela 1
+
+Tabela com as frequências desordenadas
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+pander::pander(table1)
+```
+</center>
+
+---
+
+#### Tabela 2
+
+Tabela com as frequências ordenadas
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+pander::pander(table2)
+```
+</center>
+
+---
+
+#### Gráfico 1
+
+Gráfico de setores
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+
+table1 <- freq_n_ord(quest_23$escolaridade)
+
+table1$Niveis <- as.vector(table1$Niveis)
+
+table1 <- table1 %>% 
+  arrange(desc(Niveis)) %>%
+  mutate(ypos = cumsum(Frequencia.relativa)- 0.5*Frequencia.relativa)
+
+ggplot(table1, aes(x="", y=Frequencia.relativa, fill=Niveis)) +
+  geom_bar(stat="identity", 
+           width=1,
+           col = 1,
+           lwd = 1) +
+  coord_polar("y", start=0) +
+  theme_classic() + 
+  #theme(legend.position="none") +
+  geom_text(aes(y = ypos, label = Frequencia), 
+            color = 1, 
+            size = 5)+
+  ylab("") +
+  xlab("") +
+  ggtitle("Escolaridade")+
+  theme(legend.position = 'bottom',
+    plot.title = element_text(family = "Helvetica", 
+                              face = "bold", 
+                              size = (20),
+                              hjust = 0.5),
+    axis.title = element_text(face = "bold",
+                              size = 15),
+    axis.text = element_blank(),
+    legend.title = element_blank(),
+    text = element_text(size=20))
+```
+
+---
+
+#### Gráfico 2
+
+Gráfico de barras desordenadas
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+
+table2 <- freq_n_ord(quest_23$escolaridade)
+
+table2$Niveis <- as.vector(table2$Niveis)
+
+ggplot(data = table2, aes(x = Niveis, 
+                          y = Frequencia)) +
+  geom_bar(stat = 'identity',
+           col = 1,
+           lwd = 1) +  
+  ylim(c(0, 
+         (max(table2$Frequencia)+ (max(table2$Frequencia)*0.1))))+
+  coord_flip() +
+  geom_text(aes(label = Frequencia),
+            hjust=-0.5, 
+            color=1, 
+            size=5)+
+  ylab("") +
+  xlab("") +
+  ggtitle("Escolaridade")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          axis.text.x=element_blank(),
+                          text = element_text(size=20))
+```
+
+---
+
+#### Gráfico 3
+
+Gráfico de barras ordenadas
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+ggplot(data = table2, aes(x = reorder(Niveis, Frequencia), 
+                          y = Frequencia)) +
+  geom_bar(stat = 'identity',
+           col = 1,
+           lwd = 1) +  
+  ylim(c(0, 
+         (max(table2$Frequencia)+ (max(table2$Frequencia)*0.1))))+
+  coord_flip() +
+  geom_text(aes(label = Frequencia),
+            hjust=-0.5, 
+            color=1, 
+            size=5)+
+  ylab("") +
+  xlab("") +
+  ggtitle("Escolaridade")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          axis.text.x=element_blank(),
+                          text = element_text(size=20))
+```
+
+---
+
+### Em que ano você finalizou o ensino médio? {.tabset .tabset-fade .tabset-pills}
+
+---
+
+#### Tabela 1
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+ano_ensino_medio <- subset(quest_23, 
+                           ano_ensino_medio<2023 & ano_ensino_medio>1950)
+
+pander(freq_n_ord(ano_ensino_medio$ano_ensino_medio))
+```
+</center>
+
+---
+
+#### Tabela 2
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+pander(tab_classes(ano_ensino_medio$ano_ensino_medio))
+```
+</center>
+
+---
+
+#### Tabela 3
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+pander(posicao(ano_ensino_medio$ano_ensino_medio))
+pander(dispersao(ano_ensino_medio$ano_ensino_medio))
+```
+</center>
+
+---
+
+#### Gráfico 1
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+table <- as.data.frame(table(ano_ensino_medio$ano_ensino_medio))
+table$Var1 <- as.numeric(as.vector(table$Var1))
+
+# Plot
+ggplot(table, aes(x=Var1, y=Freq)) +
+  geom_point() + 
+  geom_segment(aes(x=Var1, 
+                   xend=Var1, 
+                   y=0, 
+                   yend=Freq),
+               lwd = 1.5)+
+  xlab("Ano") +
+  ylab("Frequência") +
+  ggtitle("Ano que terminou o ensino médio")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15)) 
+```
+
+---
+
+#### Gráfico 2
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+ggplot(ano_ensino_medio, aes(x=ano_ensino_medio)) +
+  geom_histogram(col=1,
+                 lwd=1,
+                 breaks = hist(ano_ensino_medio$ano_ensino_medio, 
+                               plot = FALSE)$breaks) + 
+  xlab("Ano") +
+  ylab("Frequência") +
+  ggtitle("Ano em que terminou o ensino médio")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15)) 
+```
+
+---
+
+#### Gráfico 3
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+ggplot(data = ano_ensino_medio, 
+       mapping = aes(y=ano_ensino_medio, x='1')) +
+  stat_boxplot(geom ='errorbar')+
+  geom_boxplot(alpha = 1)+
+  stat_summary(fun.y=mean, 
+               geom="point", 
+               shape=20, 
+               size=3, 
+               color="red", 
+               fill="red")+ 
+  xlab("") +
+  ylab("") +
+  ggtitle("Fim do ensino médio")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          axis.text.x=element_blank(),
+                          text = element_text(size=15)) #+coord_flip()
+```
+
+---
+
+#### Gráfico 4
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+ggplot(data = ano_ensino_medio, 
+       mapping = aes(y=ano_ensino_medio, x='1')) +
+  stat_boxplot(geom ='errorbar')+
+  geom_boxplot(alpha = 1)+
+  stat_summary(fun.y=mean, 
+               geom="point", 
+               shape=20, 
+               size=3, 
+               color="red", 
+               fill="red")+ 
+  ylab("") +
+  xlab("") +
+  ggtitle("Fim do ensino médio")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          axis.text.x=element_blank(),
+                          text = element_text(size=15)) +
+  geom_jitter(col=4, alpha = 0.5) #+coord_flip()
+```
+
+---
+
+#### Gráfico 5
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+ggplot(ano_ensino_medio, aes(x=ano_ensino_medio)) +
+  geom_density(col=1,
+               lwd=1) + 
+  xlab("Ano") +
+  ylab("Densidade") +
+  ggtitle("Fim do ensino médio")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15)) 
+```
+
+---
+
+#### Gráfico 6
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+ggplot(ano_ensino_medio) + 
+  geom_histogram(aes(x=ano_ensino_medio,
+                     y=..density..), 
+                 position="identity",
+                 col = 1,
+                 lwd = 1,
+                 breaks = hist(ano_ensino_medio$ano_ensino_medio, plot = FALSE)$breaks) + 
+  geom_density(aes(x=ano_ensino_medio,
+                   y=..density..),
+               col = 4,
+               lwd = 1) + 
+  xlab("Ano") +
+  ylab("Densidade") +
+  ggtitle("Fim do ensino médio")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15)) 
+```
+
+---
+
+#### Gráfico 7
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+p1 = ggplot(ano_ensino_medio, aes(x=ano_ensino_medio)) +
+  geom_histogram(col=1,
+                 lwd=1,
+                 breaks = hist(ano_ensino_medio$ano_ensino_medio, plot = FALSE)$breaks) +
+  ylab("Frequência") +
+  xlab("") +
+  ggtitle("Fim do ensino médio")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15))
+
+p2 = ggplot(data = ano_ensino_medio, 
+            mapping = aes(y=ano_ensino_medio, x='1')) +
+  stat_boxplot(geom ='errorbar')+
+  geom_boxplot(alpha = 1)+
+  stat_summary(fun.y=mean, 
+               geom="point", 
+               shape=20, 
+               size=3, 
+               color="red", 
+               fill="red")+ 
+  ylab("Ano") +
+  xlab("") +
+  #ggtitle("Titulo")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          axis.text.y=element_blank(),
+                          text = element_text(size=15)) +coord_flip()
+
+ggarrange(p1, p2, 
+          heights = c(2, 1), 
+          align = "hv", 
+          ncol = 1, 
+          nrow = 2)
+```
+
+---
+
+#### Gráfico 8
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+p1 = ggplot(ano_ensino_medio) + 
+  geom_histogram(aes(x=ano_ensino_medio,
+                     y=..density..), 
+                 position="identity",
+                 col = 1,
+                 lwd = 1,
+                 breaks = hist(ano_ensino_medio$ano_ensino_medio, plot = FALSE)$breaks) +
+  geom_density(aes(x=ano_ensino_medio,
+                   y=..density..),
+               col = 4,
+               lwd = 1) + 
+  ylab("Densidade") +
+  xlab("") +
+  ggtitle("Fim do ensino médio")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15))
+
+p2 = ggplot(data = ano_ensino_medio, 
+            mapping = aes(y=ano_ensino_medio, x='1')) +
+  stat_boxplot(geom ='errorbar')+
+  geom_boxplot(alpha = 1)+
+  stat_summary(fun.y=mean, 
+               geom="point", 
+               shape=20, 
+               size=3, 
+               color="red", 
+               fill="red")+ 
+  ylab("Ano") +
+  xlab("") +
+  #ggtitle("Titulo")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          axis.text.y=element_blank(),
+                          text = element_text(size=15)) +coord_flip()
+
+ggarrange(p1, p2, 
+          heights = c(2, 1), 
+          align = "hv", 
+          ncol = 1, 
+          nrow = 2)
+```
+
+---
+
+### Você cursou o ensino médio em escola pública ou particular? {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo=FALSE}
+#----------------------------------------------------------------------
+
+## 2023
+quest_23$ensino_medio1 <- tolower(iconv(quest_23$ensino_medio1, 
+                                        to ='ASCII//TRANSLIT', 
+                                        from = "UTF-8"))
+
+quest_23$ensino_medio1 <- factor(quest_23$ensino_medio1,
+                               levels = c("totalmente em escola publica",
+                                          "totalmente em escola particular", 
+                                          "parte em escola publica, parte em particular"))
+
+# tabela
+
+table1 <- freq_ord(quest_23$ensino_medio1)
+```
+
+
+---
+
+#### Tabela
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+
+pander::pander(table1)
+```
+</center>
+
+---
+
+#### Gráfico
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+
+table1 <- freq_n_ord(quest_23$ensino_medio1)
+
+table1$Niveis <- c('Pública', 'Particular', 'Ambos')
+
+ggplot(data=table1, aes(x=reorder(Niveis, -Frequencia), 
+                       y=Frequencia#, 
+                       #fill = Niveis
+                       )) + 
+  geom_bar(stat="identity", 
+           col=1,
+           lwd=1)+
+  ylim(c(0, 
+         (max(table1$Frequencia)+ (max(table1$Frequencia)*0.2))))+
+  geom_text(aes(label=Frequencia), 
+            vjust=-1, 
+            color=1, 
+            size=8)+
+  ylab("Frequência") +
+  xlab("") +
+  ggtitle("Tipo de ensino médio")+
+  theme_classic() + theme(legend.position = 'bottom',
+    plot.title = element_text(family = "Helvetica", 
+                              face = "bold", 
+                              size = (20),
+                              hjust = 0.5),
+    axis.title = element_text(face = "bold",
+                              size = 15),
+    #axis.text = element_blank(),
+    legend.title = element_blank(),
+    text = element_text(size=15)) 
+```
+
+---
+
+### Você cursou ensino médio tradicional ou profissionalizante? {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo=FALSE}
+#----------------------------------------------------------------------
+
+## 2023
+quest_23$ensino_medio2 <- tolower(iconv(quest_23$ensino_medio2, 
+                                        to ='ASCII//TRANSLIT', 
+                                        from = "UTF-8"))
+
+classOpcoes <- tolower(c("Ensino medio tradicional",
+                         "Ensino medio profissionalizante (tecnico)"))
+
+quest_23$ensino_medio2[ !quest_23$ensino_medio2 %in% classOpcoes ] <- "outro"
+
+quest_23$ensino_medio2 <- factor(quest_23$ensino_medio2,
+                               levels = c(classOpcoes, 'outro'))
+
+# tabela
+
+table1 <- freq_ord(quest_23$ensino_medio2)
+```
+
+
+---
+
+#### Tabela
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+
+pander::pander(table1)
+```
+</center>
+
+---
+
+#### Gráfico
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+
+table1 <- freq_n_ord(quest_23$ensino_medio2)
+
+table1$Niveis <- c('Tradicional', 'Profissionalizante', 'Outro')
+
+ggplot(data=table1, aes(x=reorder(Niveis, -Frequencia), 
+                       y=Frequencia#, 
+                       #fill = Niveis
+                       )) + 
+  geom_bar(stat="identity", 
+           col=1,
+           lwd=1)+
+  ylim(c(0, 
+         (max(table1$Frequencia)+ (max(table1$Frequencia)*0.2))))+
+  geom_text(aes(label=Frequencia), 
+            vjust=-1, 
+            color=1, 
+            size=8)+
+  ylab("Frequência") +
+  xlab("") +
+  ggtitle("Tipo de ensino médio")+
+  theme_classic() + theme(legend.position = 'bottom',
+    plot.title = element_text(family = "Helvetica", 
+                              face = "bold", 
+                              size = (20),
+                              hjust = 0.5),
+    axis.title = element_text(face = "bold",
+                              size = 15),
+    #axis.text = element_blank(),
+    legend.title = element_blank(),
+    text = element_text(size=15)) 
+```
+
+---
+
+---
+
+### Você tem/teve contato com alguma linguagem de programação? {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo=FALSE}
+
+#-----------------------------------------------------------------------
+
+## 2023
+quest_23$programacao_sn <- tolower(iconv(quest_23$programacao_sn,
+                                      to ='ASCII//TRANSLIT', 
+                                      from = "UTF-8"))
+
+quest_23$programacao_sn <- factor(quest_23$programacao_sn, 
+                               levels = tolower(c("sim", "nao")))
+
+#-----------------------------------------------------------------------
+
+# tabela
+
+table1 <- freq_ord(quest_23$programacao_sn)
+
+```
+
+---
+
+#### Tabela
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+
+pander::pander(table1)
+```
+</center>
+
+---
+
+#### Gráfico
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+
+ggplot(data=table1, aes(x=reorder(Niveis, -Frequencia), 
+                       y=Frequencia#, 
+                       #fill = Niveis
+                       )) + 
+  geom_bar(stat="identity", 
+           col=1,
+           lwd=1)+
+  ylim(c(0, 
+         (max(table1$Frequencia)+ (max(table1$Frequencia)*0.2))))+
+  geom_text(aes(label=Frequencia), 
+            vjust=-1, 
+            color=1, 
+            size=8)+
+  ylab("Frequência") +
+  xlab("") +
+  ggtitle("Linguagem de programação")+
+  theme_classic() + theme(legend.position = 'none',
+    plot.title = element_text(family = "Helvetica", 
+                              face = "bold", 
+                              size = (20),
+                              hjust = 0.5),
+    axis.title = element_text(face = "bold",
+                              size = 15),
+    #axis.text = element_blank(),
+    legend.title = element_blank(),
+    text = element_text(size=15)) 
+```
+
+---
+
+### Quais linguagens de programação você já usou? {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo=FALSE, warning=FALSE}
+
+# tratamento
+quest_23$programacao_list <- tolower(iconv(quest_23$programacao_list, 
+                                   to ='ASCII//TRANSLIT', 
+                                   from = "UTF-8"))
+
+quest_23$programacao_list <- gsub(",",";",quest_23$programacao_list)
+
+# gerando vetor
+
+vet <- as.vector(cSplit(quest_23, 
+                        "programacao_list", 
+                        sep = ";", 
+                      direction = "long")$programacao_list)
+
+classOpcoes <- c("nunca usei",
+                 "r",
+                 "c",
+                 "c++",
+                 "php",
+                 "c#",
+                 "python",
+                 "java",
+                 "sql",
+                 "javascript")
+
+
+vet[ !vet %in% classOpcoes ] <- "outro"
+
+vet <- as.factor(vet)
+
+vet <- factor(vet,
+              levels = c(classOpcoes,
+                 "outro"))
+
+```
+
+
+---
+
+#### Tabela
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+
+pander::pander(freq_ord(vet))
+
+```
+</center>
+
+---
+
+#### Gráfico
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+table2 <- freq_n_ord(vet)
+
+ggplot(data = table2, aes(x = reorder(Niveis, Frequencia), 
+                          y = Frequencia)) +
+  geom_bar(stat = 'identity',
+           col = 1,
+           lwd = 1) +  
+  ylim(c(0, 
+         (max(table2$Frequencia)+ (max(table2$Frequencia)*0.1))))+
+  coord_flip() +
+  geom_text(aes(label = Frequencia),
+            hjust=-0.5, 
+            color=1, 
+            size=5)+
+  ylab("") +
+  xlab("") +
+  ggtitle("Linguagens de programação")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          axis.text.x=element_blank(),
+                          text = element_text(size=20))
+```
+
+---
+
+---
+
+### Já utilizou algum software com funcionalidades estatísticas? {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo=FALSE}
+
+#-----------------------------------------------------------------------
+
+## 2023
+quest_23$software_sn <- tolower(iconv(quest_23$software_sn,
+                                      to ='ASCII//TRANSLIT', 
+                                      from = "UTF-8"))
+
+quest_23$software_sn <- factor(quest_23$software_sn, 
+                               levels = tolower(c("sim", "nao")))
+
+#-----------------------------------------------------------------------
+
+# tabela
+
+table1 <- freq_ord(quest_23$software_sn)
+
+```
+
+---
+
+#### Tabela
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+
+pander::pander(table1)
+```
+</center>
+
+---
+
+#### Gráfico
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+
+ggplot(data=table1, aes(x=reorder(Niveis, -Frequencia), 
+                       y=Frequencia#, 
+                       #fill = Niveis
+                       )) + 
+  geom_bar(stat="identity", 
+           col=1,
+           lwd=1)+
+  ylim(c(0, 
+         (max(table1$Frequencia)+ (max(table1$Frequencia)*0.2))))+
+  geom_text(aes(label=Frequencia), 
+            vjust=-1, 
+            color=1, 
+            size=8)+
+  ylab("Frequência") +
+  xlab("") +
+  ggtitle("Uso de software estatístico")+
+  theme_classic() + theme(legend.position = 'none',
+    plot.title = element_text(family = "Helvetica", 
+                              face = "bold", 
+                              size = (20),
+                              hjust = 0.5),
+    axis.title = element_text(face = "bold",
+                              size = 15),
+    #axis.text = element_blank(),
+    legend.title = element_blank(),
+    text = element_text(size=15)) 
+```
+
+---
+
+### Qual(is) software(s) com funcionalidades estatísticas você usa ou já usou? {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo=FALSE, warning=FALSE}
+
+# tratamento
+quest_23$software_list <- tolower(iconv(quest_23$software_list, 
+                                   to ='ASCII//TRANSLIT', 
+                                   from = "UTF-8"))
+
+quest_23$software_list <- gsub(",",";",quest_23$software_list)
+
+# gerando vetor
+
+vet <- as.vector(cSplit(quest_23, 
+                        "software_list", 
+                        sep = ";", 
+                      direction = "long")$software_list)
+
+classOpcoes <- c("nunca usei",
+                 "r",
+                 "sas",
+                 "minitab",
+                 "statistica",
+                 "spss",
+                 "excel ou similares",
+                 "matlab")
+
+
+vet[ !vet %in% classOpcoes ] <- "outro"
+
+vet <- as.factor(vet)
+
+vet <- factor(vet,
+              levels = c("nunca usei",
+                 "r",
+                 "sas",
+                 "minitab",
+                 "statistica",
+                 "spss",
+                 "excel ou similares",
+                 "matlab",
+                 "outro"))
+
+```
+
+
+---
+
+#### Tabela
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+
+pander::pander(freq_ord(vet))
+
+```
+</center>
+
+---
+
+#### Gráfico
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+table2 <- freq_n_ord(vet)
+
+ggplot(data = table2, aes(x = reorder(Niveis, Frequencia), 
+                          y = Frequencia)) +
+  geom_bar(stat = 'identity',
+           col = 1,
+           lwd = 1) +  
+  ylim(c(0, 
+         (max(table2$Frequencia)+ (max(table2$Frequencia)*0.1))))+
+  coord_flip() +
+  geom_text(aes(label = Frequencia),
+            hjust=-0.5, 
+            color=1, 
+            size=5)+
+  ylab("") +
+  xlab("") +
+  ggtitle("Software")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          axis.text.x=element_blank(),
+                          text = element_text(size=20))
+```
+
+---
+
+### Qual a importância que você atribui à Estatística? {.tabset .tabset-fade .tabset-pills}
+
+---
+
+#### Tabela 1
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+importancia_estatistica <- subset(quest_23, importancia_estatistica >= 0)
+
+importancia_estatistica$importancia_estatistica2 <-factor(importancia_estatistica$importancia_estatistica,
+                                       levels = 0:10)
+
+pander(freq_n_ord(importancia_estatistica$importancia_estatistica2))
+```
+</center>
+
+---
+
+#### Tabela 2
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+pander(posicao(importancia_estatistica$importancia_estatistica))
+pander(dispersao(importancia_estatistica$importancia_estatistica))
+```
+</center>
+
+---
+
+#### Gráfico 1
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+table <- as.data.frame(table(importancia_estatistica$importancia_estatistica2))
+table$Var1 <- as.numeric(as.vector(table$Var1))
+
+# Plot
+ggplot(table, aes(x=Var1, y=Freq)) +
+  geom_point() + 
+  geom_segment(aes(x=Var1, 
+                   xend=Var1, 
+                   y=0, 
+                   yend=Freq),
+               lwd = 1.5)+
+  xlab("Valor") +
+  ylab("Frequência") +
+  ggtitle("Importância Estatística")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15)) 
+```
+
+---
+
+#### Gráfico 2
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+ggplot(table, aes(x=Var1, y=Freq)) +
+  geom_bar(col=1,
+           lwd=1,
+           stat = 'identity') + 
+  xlab("Valor") +
+  ylab("Frequência") +
+  ggtitle("Importância Estatística")+
+  theme_classic() + scale_x_discrete(limits = 0:10)+ 
+  theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15)) 
+```
+
+---
+
+#### Gráfico 3
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+ggplot(data = importancia_estatistica, 
+       mapping = aes(y=importancia_estatistica, x='1')) +
+  stat_boxplot(geom ='errorbar')+
+  geom_boxplot(alpha = 1)+
+  stat_summary(fun.y=mean, 
+               geom="point", 
+               shape=20, 
+               size=3, 
+               color="red", 
+               fill="red")+ 
+  xlab("") +
+  ylab("") +
+  ggtitle("Importância Estatística")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          axis.text.x=element_blank(),
+                          text = element_text(size=15)) #+coord_flip()
+```
+
+---
+
+#### Gráfico 4
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+ggplot(data = importancia_estatistica, 
+       mapping = aes(y=importancia_estatistica, x='1')) +
+  stat_boxplot(geom ='errorbar')+
+  geom_boxplot(alpha = 1)+
+  stat_summary(fun.y=mean, 
+               geom="point", 
+               shape=20, 
+               size=3, 
+               color="red", 
+               fill="red")+ 
+  ylab("") +
+  xlab("") +
+  ggtitle("Importância Estatística")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          axis.text.x=element_blank(),
+                          text = element_text(size=15)) +
+  geom_jitter(col=4, alpha = 0.5) #+coord_flip()
+```
+
+---
+
+#### Gráfico 5
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+ggplot(importancia_estatistica, aes(x=importancia_estatistica)) +
+  geom_density(col=1,
+               lwd=1) + 
+  xlab("Valor") +
+  ylab("Densidade") +
+  ggtitle("Importância Estatística")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15)) 
+```
+
+---
+
+#### Gráfico 6
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, warning=FALSE}
+p1 = ggplot(table, aes(x=Var1, y=Freq)) +
+  geom_bar(col=1,
+           lwd=1,
+           stat = 'identity') + 
+  ylab("Frequência") +
+  xlab("") +
+  ggtitle("Importância Estatística")+
+  theme_classic() + scale_x_discrete(limits = 0:10) +
+  theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          text = element_text(size=15))
+
+p2 = ggplot(data = importancia_estatistica, 
+            mapping = aes(y=importancia_estatistica, x='1')) +
+  stat_boxplot(geom ='errorbar')+
+  geom_boxplot(alpha = 1)+
+  stat_summary(fun.y=mean, 
+               geom="point", 
+               shape=20, 
+               size=3, 
+               color="red", 
+               fill="red")+ 
+  ylab("Valor") +
+  xlab("") + ylim(c(0,10))+
+  #ggtitle("Titulo")+
+  theme_classic() + theme(legend.position = 'none',
+                          plot.title = element_text(family = "Helvetica", 
+                                                    face = "bold", 
+                                                    size = (20),
+                                                    hjust = 0.5),
+                          axis.title = element_text(face = "bold",
+                                                    size = 15),
+                          axis.text.y=element_blank(),
+                          text = element_text(size=15)) +coord_flip()
+
+ggarrange(p1, p2, 
+          heights = c(2, 1), 
+          align = "hv", 
+          ncol = 1, 
+          nrow = 2)
+```
+
+---
+
+### Qual a sua principal expectativa após a conclusão da graduação? {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo=FALSE}
+#----------------------------------------------------------------------
+
+## 2023
+quest_23$expectativa_pos_graduacao <- tolower(iconv(quest_23$expectativa_pos_graduacao, 
+                                      to ='ASCII//TRANSLIT', 
+                                      from = "UTF-8"))
+
+classOpcoes <- c("conseguir um emprego", 
+                 "aumento salarial e oportunidades mais promissoras",
+                 "seguir os estudos")
+
+quest_23$expectativa_pos_graduacao[ !quest_23$expectativa_pos_graduacao %in% classOpcoes ] <- "outro"
+
+quest_23$expectativa_pos_graduacao <- factor(quest_23$expectativa_pos_graduacao,
+                                levels = c(classOpcoes,
+                                           "outro"))
+
+#----------------------------------------------------------------------
+
+# tabela
+
+table1 <- freq_ord(quest_23$expectativa_pos_graduacao)
+```
+
+---
+
+#### Tabela
+
+<center>
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE}
+
+pander::pander(table1)
+```
+</center>
+
+---
+
+#### Gráfico
+
+```{r, comment=FALSE, message=FALSE, fig.align='center', warning=TRUE, echo = FALSE, fig.width=8}
+
+table1 <- freq_n_ord(quest_23$expectativa_pos_graduacao)
+
+table1$Niveis <- c("Conseguir Emprego", 
+                   "Aumento salarial", 
+                   "Seguir os estudos", 
+                   "Outro")
+
+ggplot(data=table1, aes(x=reorder(Niveis, -Frequencia), 
+                       y=Frequencia#, 
+                       #fill = Niveis
+                       )) + 
+  geom_bar(stat="identity", 
+           col=1,
+           lwd=1)+
+  ylim(c(0, 
+         (max(table1$Frequencia)+ (max(table1$Frequencia)*0.2))))+
+  geom_text(aes(label=Frequencia), 
+            vjust=-1, 
+            color=1, 
+            size=8)+
+  ylab("Frequência") +
+  xlab("") +
+  ggtitle("Expectativa após a conclusão do curso")+
+  theme_classic() + theme(#legend.position = 'bottom',
+    plot.title = element_text(family = "Helvetica", 
+                              face = "bold", 
+                              size = (20),
+                              hjust = 0.5),
+    axis.title = element_text(face = "bold",
+                              size = 15),
+    #axis.text = element_blank(),
+    legend.title = element_blank(),
+    text = element_text(size=15)) 
+```
+
+---
+
+###
+
+<center>
+
+<table><tr>
+
+<td> <img src="img/dest-texto-2.png" alt="Drawing" style="width: 250px;"/> </td>
+
+<td> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </td>
+
+<td> <img src="img/ufpr-transparent-600px.png" alt="Drawing" style="width: 200px;"/> </td>
+
+<td> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </td>
+
+<td> <img src="img/logo-leg.png" alt="Drawing" style="width: 300px;"/> </td>
+
+</center>
+
+
+<div class="tocify-extend-page" data-unique="tocify-extend-page" style="height: 0;"></div>
